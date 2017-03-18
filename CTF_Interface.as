@@ -1,9 +1,19 @@
 #include "CTF_Structs.as";
 #include "ChickenCommon.as";
+#include "Logging.as";
+#include "Hitters.as";
 
 const SColor TEAM0COLOR(255,25,94,157);
 const SColor TEAM1COLOR(255,192,36,36);
 const int FONT_SIZE = 20;
+
+ChickenCountLabel[] CHICKEN_COUNT_LABELS;
+
+class ChickenCountLabel {
+	int count;
+	int teamNum;
+	Vec2f pos;
+}
 
 void onInit(CRules@ this) {
 	this.set_u16("chicken count team0", 0);
@@ -20,12 +30,18 @@ void onInit(CRules@ this) {
 }
 
 void onTick(CRules@ this) {
-	if (getGameTime() % 60 == 0) {
-		// Cache so it doesn't have to be calculated every tick
-		this.set_u16("chicken count team0", GetChickenCountForTeam(0));
-		this.set_u16("chicken count team1", GetChickenCountForTeam(1));
-		this.set_u16("egg count team0", GetEggCountForTeam(0));
-		this.set_u16("egg count team1", GetEggCountForTeam(1));
+	if (getNet().isClient()) {
+		if (getGameTime() % 60 == 0) {
+			// Cache so it doesn't have to be calculated every tick
+			this.set_u16("chicken count team0", GetChickenCountForTeam(0));
+			this.set_u16("chicken count team1", GetChickenCountForTeam(1));
+			this.set_u16("egg count team0", GetEggCountForTeam(0));
+			this.set_u16("egg count team1", GetEggCountForTeam(1));
+		}
+
+		if (getGameTime() % 120 == 0) {
+			UpdateChickenCountLabels();
+		}
 	}
 }
 
@@ -67,6 +83,20 @@ void onRender(CRules@ this)
 						   color);
 	}
 
+	// Info bit
+	Vec2f infoUITopLeft(12, 12 + 64 + 50 + 14);
+	GUI::SetFont("hud");
+	GUI::DrawRectangle(infoUITopLeft, infoUITopLeft+Vec2f(168+32+30, 80));
+	Vec2f ptr = infoUITopLeft + Vec2f(4,4);
+	GUI::DrawText("INSTRUCTIONS:", ptr, color_white);
+	ptr.y += 16;
+	GUI::DrawText("- Hatch " + this.get_u16("chickens_to_win") + " chickens to win!", ptr, color_white);
+	ptr.y += 16;
+	GUI::DrawText("- Chickens won't hatch if", ptr, color_white);
+	ptr.y += 16;
+	GUI::DrawText("  more than " + CHICKEN_LIMIT_LOCAL + " are together.", ptr, color_white);
+
+	RenderChickenCountLabels();
 
 	string propname = "ctf spawn time " + p.getUsername();
 	if (p.getBlob() is null && this.exists(propname))
@@ -87,3 +117,56 @@ void onRender(CRules@ this)
 	}
 }
 
+// Adds numbers on groups of chickens so it's easy to see how many there are
+void UpdateChickenCountLabels() {
+	log("UpdateChickenCountLabels", "Called");
+	CBlob@[] chickens = GetChickens();
+	CHICKEN_COUNT_LABELS.clear();
+
+	for (int i=0; i < chickens.length; ++i) {
+		chickens[i].set_bool("labelled", false);
+	}
+
+	for (int i=0; i < chickens.length; ++i) {
+		CBlob@ c = chickens[i];
+		if (c.get_bool("labelled") == false) {
+			c.set_bool("labelled", true);
+			log("UpdateChickenCountLabels", "Group at " + c.getPosition().x + "," + c.getPosition().y);
+
+			int chickenCount = 0;
+			CBlob@[] nearbyBlobs;
+			getMap().getBlobsInRadius(c.getPosition(), CHICKEN_LIMIT_RADIUS, @nearbyBlobs);
+
+			for (int j=0; j < nearbyBlobs.length; ++j) {
+				CBlob@ blob = nearbyBlobs[j];
+				if (blob.getName() == "chicken" && blob.getTeamNum() == c.getTeamNum()) {
+					chickenCount++;
+					blob.set_bool("labelled", true);
+				}
+			}
+
+			ChickenCountLabel label;
+			label.count = chickenCount;
+			label.pos = c.getPosition();
+			label.teamNum = c.getTeamNum();
+			CHICKEN_COUNT_LABELS.push_back(label);
+		}
+	}
+}
+
+
+void RenderChickenCountLabels() {
+	for (int i=0; i < CHICKEN_COUNT_LABELS.length; ++i) {
+		ChickenCountLabel label = CHICKEN_COUNT_LABELS[i];
+		Vec2f screenPos = getDriver().getScreenPosFromWorldPos(label.pos);
+		GUI::SetFont("hud");
+		SColor color; 
+		if (label.teamNum == 0)
+			color =	TEAM0COLOR;
+		else if (label.teamNum == 1) 
+			color = TEAM1COLOR;
+		else
+			color = color_white;
+		GUI::DrawTextCentered("" + label.count, screenPos, color);
+	}
+}

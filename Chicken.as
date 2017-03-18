@@ -14,7 +14,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData) {
-	log("onHit", "damage: " + damage);
+	log("onHit", "damage: " + damage + ", health: " + this.getHealth());
 	this.getSprite().PlaySound("/ScaredChicken");
 	return damage;
 }

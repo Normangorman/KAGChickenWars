@@ -204,8 +204,12 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	}
 
 	// MODDED: chickens & eggs
-	if (name == "chicken" || name == "egg") {
+	if (name == "egg") {
 		scale *= 0.42f;
+	}
+
+	if (name == "chicken") {
+		scale *= 0.7f;
 	}
 
 	//low priority

@@ -1,3 +1,12 @@
+const int LAY_EGG_CHANCE = 60 * getTicksASecond();
+const int CHICKEN_SOUND_CHANCE = 15*getTicksASecond();
+const int EGG_GROW_TIME = 50 * getTicksASecond();
+const float CHICKEN_LIMIT_RADIUS = 2 * 8.0;
+const int CHICKEN_LIMIT_LOCAL = 5; // max in radius to hatch
+const int EGG_LIMIT_LOCAL = 10;
+const int EGG_UPDATE_FREQ = 120;
+
+
 shared CBlob@[] GetChickens() {
     CBlob@[] chickens;
     getBlobsByName("chicken", @chickens);
