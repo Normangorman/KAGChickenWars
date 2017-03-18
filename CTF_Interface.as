@@ -119,7 +119,7 @@ void onRender(CRules@ this)
 
 // Adds numbers on groups of chickens so it's easy to see how many there are
 void UpdateChickenCountLabels() {
-	log("UpdateChickenCountLabels", "Called");
+	//log("UpdateChickenCountLabels", "Called");
 	CBlob@[] chickens = GetChickens();
 	CHICKEN_COUNT_LABELS.clear();
 
@@ -131,7 +131,7 @@ void UpdateChickenCountLabels() {
 		CBlob@ c = chickens[i];
 		if (c.get_bool("labelled") == false) {
 			c.set_bool("labelled", true);
-			log("UpdateChickenCountLabels", "Group at " + c.getPosition().x + "," + c.getPosition().y);
+			//log("UpdateChickenCountLabels", "Group at " + c.getPosition().x + "," + c.getPosition().y);
 
 			int chickenCount = 0;
 			CBlob@[] nearbyBlobs;

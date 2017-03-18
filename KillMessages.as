@@ -216,11 +216,11 @@ void onInit(CRules@ this)
 
 f32 onBlobTakeDamage(CRules@ this, CBlob@ victim , CBlob@ attacker, f32 DamageScale) {
 	if (victim.getName() == "chicken") {
-		log("onBlobTakeDamage", "chicken took damage " + DamageScale + ", health: " + victim.getHealth());
+		//log("onBlobTakeDamage", "chicken took damage " + DamageScale + ", health: " + victim.getHealth());
 
 		CPlayer@ damageOwner = attacker.getDamageOwnerPlayer();
 		if (damageOwner !is null) {
-			log("onBlobTakeDamage", "damageOwner not null");
+			//log("onBlobTakeDamage", "damageOwner not null");
 			if (victim.getTeamNum() == 0) {
 				LAST_CHICKEN_HITTER_TEAM0 = damageOwner.getNetworkID();
 			}
@@ -229,23 +229,23 @@ f32 onBlobTakeDamage(CRules@ this, CBlob@ victim , CBlob@ attacker, f32 DamageSc
 			}
 		}
 		else {
-			log("onBlobTakeDamage", "damageOwner is null");
+			//log("onBlobTakeDamage", "damageOwner is null");
 		}
 	}
 	return 1.0;
 }
 
 void onBlobDie(CRules@ this, CBlob@ blob) {
-	log("onBlobDie", "" + blob.getName());
+	//log("onBlobDie", "" + blob.getName());
 	if (blob.getName() == "chicken") {
-		log("onBlobDie", "Chicken died");
+		//log("onBlobDie", "Chicken died");
 		if (blob.getTeamNum() == 0) {
 			CHICKENS_KILLED_TEAM0++;
-			log("onBlobDie", "Incrementing 0");
+			//log("onBlobDie", "Incrementing 0");
 		}
 		else if (blob.getTeamNum() == 1) {
 			CHICKENS_KILLED_TEAM1++;
-			log("onBlobDie", "Incrementing 1");
+			//log("onBlobDie", "Incrementing 1");
 		}
 	}
 }
