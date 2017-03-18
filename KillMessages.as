@@ -232,7 +232,7 @@ f32 onBlobTakeDamage(CRules@ this, CBlob@ victim , CBlob@ attacker, f32 DamageSc
 			//log("onBlobTakeDamage", "damageOwner is null");
 		}
 	}
-	return 1.0;
+	return DamageScale;
 }
 
 void onBlobDie(CRules@ this, CBlob@ blob) {
