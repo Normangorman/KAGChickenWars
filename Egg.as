@@ -14,6 +14,10 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	return true;
 }
 
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob) {
+	return blob.hasTag("wooden");
+}
+
 
 /* Moved to ChickenHiveMind
 void onTick(CBlob@ this)
