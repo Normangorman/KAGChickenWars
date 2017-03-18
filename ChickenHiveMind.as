@@ -2,6 +2,23 @@
 #include "ChickenCommon.as"
 
 
+void onInit(CRules@ this) {
+	// Kill all neutral chickens
+	CBlob@[] chickens = GetChickens();
+
+	for (int i=0; i < chickens.length; ++i) {
+		CBlob@ chicken = chickens[i];
+
+		if (chicken.getTeamNum() == 0 || chicken.getTeamNum() == 1) {
+			continue;
+		}
+		else {
+			// CULL IT
+			chicken.server_Die();
+		}
+	}
+}
+
 void onTick(CRules@ this) {
     CBlob@[] chickens = GetChickens();
     //log("onTick", "num chickens: " + chickens.length);
